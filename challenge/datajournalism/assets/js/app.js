@@ -41,7 +41,7 @@ xText
   .attr("data-name", "poverty")
   .attr("data-axis", "x")
   .attr("class", "aText active x")
-  .text("In Poverty (%)");
+  .text("Poverty (%)");
 
 xText
   .append("text")
@@ -49,7 +49,7 @@ xText
   .attr("data-name", "age")
   .attr("data-axis", "x")
   .attr("class", "aText inactive x")
-  .text("Age (Median)");
+  //.text("Age (Median)");
 
 xText
   .append("text")
@@ -57,7 +57,7 @@ xText
   .attr("data-name", "income")
   .attr("data-axis", "x")
   .attr("class", "aText inactive x")
-  .text("Household Income (Median)");
+  //.text("Household Income (Median)");
 
 var leftTextX = margin + tPadLeft;
 var leftTextY = (height + labelArea)/ 2 - labelArea;
@@ -87,7 +87,7 @@ yText
   .attr("data-name", "smokes")
   .attr("data-axis", "y")
   .attr("class", "aText inactive y")
-  .text("Smokes (%)");
+  //.text("Smokes (%)");
 
 xText
   .append("text")
@@ -95,10 +95,9 @@ xText
   .attr("data-name", "healthcare")
   .attr("data-axis", "y")
   .attr("class", "aText inactive y")
-  .text("Lacks Healthcare (%)");
+  //.text("Lacks Healthcare (%)");
 
 d3.csv("assets/data/data.csv").then(function(data) {
-
   visualize(data);
 });
 
@@ -214,18 +213,18 @@ svg
   .attr("transform", "translate(" +(margin + labelArea) + ",0)");
 
 var theCircles = svg.selectAll("g theCircles").data(theData).enter();
-
+//console.log(theCircles);
 theCircles
   .append("circle")
   .attr("cx", function(d) {
-    return xScale(d[curX])
+    return xScale(d[curX]);
   })
   .attr("cy", function(d){
-    return yScale(d[curY])
+    return yScale(d[curY]);
   })
   .attr("r", circRadius)
   .attr("class", function(d) {
-    return "stateCircle" + d.abbr
+    return "stateCircle" + d.abbr;
   })
   .on("mouseover", function(d) {
     toolTip.show(d, this);
@@ -241,8 +240,8 @@ theCircles
   .attr(function(d) {
     return d.abbr;
   })
-  .attr("dx", function(d) {
-    return xScale([curX]);
+  .attr("dx", function(d){
+    return xScale(d[curX]);
   })
   .attr("dy", function(d) {
     return yScale(d[curY]) + circRadius/ 2.5;
@@ -250,16 +249,16 @@ theCircles
   .attr("font-size", circRadius) 
   .attr("class", "stateText")
   .on("mouseover", function(d) {
-    toolTip.show(d);
+    toolTip.show(d,this);
     d3.select("." + d.abbr).style("stroke", "#e3e3e3")
   })
   .on("mouseout", function(d) {
-  })
   toolTip.hide(d);
   d3.select("." + d.abbr).style("stroke", "#e3e3e3")
+})
 };
 
-d3.selectAll(".aText").on("click", function(){
+/*d3.selectAll(".aText").on("click", function(){
 
 var self = d3.select(this);
 
@@ -390,5 +389,5 @@ d3
     return xScale(d[curX]);
     })
     .attr("r", circRadius / 3);
-}
+}*/
 
