@@ -63,8 +63,9 @@ var leftTextX = margin + tPadLeft;
 var leftTextY = (height + labelArea)/ 2 - labelArea;
 
 svg.append("g").attr("class", "yText");
-
- function yTextRefresh() {
+var yText = d3.select(".yText");
+ 
+function yTextRefresh() {
   yText.attr(
     "transform",
     "translate(" + leftTextX + "," + leftTextY + ")rotate(-90)"
@@ -118,9 +119,9 @@ var toolTip = d3
   .html(function(d) {
 
     var theX;
-
+    
     var theState = "<div>" + d.state + "</div>";
-
+    
     var theY = "<div>" + curY + ": " +d[curY] + "</div>";
 
     if (curX === "poverty") {
@@ -150,6 +151,17 @@ xMax = d3.max(theData, function(d) {
 });
 }
 
+function yMinMax() {
+
+  yMin = d3.min(theData, function(d) {
+   return parseFloat(d[curY]) * 0.90;
+  });
+  
+  yMax = d3.max(theData, function(d) {
+   return parseFloat(d[curY]) * 1.10;
+  });
+  }
+
 function labelChange(axis, clickedText) {
 
   d3
@@ -168,9 +180,9 @@ yMinMax();
 var xScale = d3
   .scaleLinear()
   .domain([xMin, xMax])
-  .range([margin +labelArea, width - margin]);
+  .range([margin + labelArea, width - margin]);
 
-var xScale = d3
+var yScale = d3
   .scaleLinear()
   .domain([yMin, yMax])
   .range([height - margin - labelArea, margin]);
@@ -204,28 +216,42 @@ svg
 var theCircles = svg.selectAll("g theCircles").data(theData).enter();
 
 theCircles
-  .append("circles")
+  .append("circle")
   .attr("cx", function(d) {
+    return xScale(d[curX])
+  })
+  .attr("cy", function(d){
+    return yScale(d[curY])
   })
   .attr("r", circRadius)
   .attr("class", function(d) {
+    return "stateCircle" + d.abbr
   })
   .on("mouseover", function(d) {
+    toolTip.show(d, this);
+    d3.select(this).style("stroke" , "#323232");
   })
   .on("mouseout", function(d) {
+    toolTip.hide(d);
+    d3.select(this).style("stroke" , "#323232"); 
 });
 
 theCircles
   .append("text")
   .attr(function(d) {
+    return d.abbr;
   })
   .attr("dx", function(d) {
+    return xScale([curX]);
   })
   .attr("dy", function(d) {
+    return yScale(d[curY]) + circRadius/ 2.5;
   })
   .attr("font-size", circRadius) 
   .attr("class", "stateText")
   .on("mouseover", function(d) {
+    toolTip.show(d);
+    d3.select("." + d.abbr).style("stroke", "#e3e3e3")
   })
   .on("mouseout", function(d) {
   })
@@ -259,8 +285,8 @@ d3
   .transition()
   .attr("cx", function(d) {
     return xScale(d[curX]);
-})
-.duration(300);
+  })
+  .duration(300);
 });
 
 d3.selectAll(".stateText").each(function() {
@@ -365,3 +391,4 @@ d3
     })
     .attr("r", circRadius / 3);
 }
+
