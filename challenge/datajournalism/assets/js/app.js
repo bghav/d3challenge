@@ -237,11 +237,12 @@ theCircles
 
 theCircles
   .append("text")
-  .attr(function(d) {
-    return d.abbr;
-  })
+  //.attr(function(d) {
+    //return d.abbr;
+  //})
   .attr("dx", function(d){
     return xScale(d[curX]);
+    
   })
   .attr("dy", function(d) {
     return yScale(d[curY]) + circRadius/ 2.5;
