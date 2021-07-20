@@ -31,19 +31,22 @@ crGet();
 svg.append("g").attr("class", "xText");
 var xText = d3.select(".xText");
 
+var leftTextX = margin + tPadLeft;
+var leftTextY = (height + labelArea)/ 2 - labelArea;
+
 function xTextRefresh() {
 }
 xTextRefresh();
 
 xText
   .append("text")
-  .attr("y", -26)
+  .attr("x", -26)
   .attr("data-name", "poverty")
   .attr("data-axis", "x")
   .attr("class", "aText active x")
   .text("Poverty (%)");
 
-xText
+/*xText
   .append("text")
   .attr("y", 0)
   .attr("data-name", "age")
@@ -53,14 +56,11 @@ xText
 
 xText
   .append("text")
-  .attr("y", 26)
+  .attr("x", 26)
   .attr("data-name", "income")
   .attr("data-axis", "x")
   .attr("class", "aText inactive x")
-  //.text("Household Income (Median)");
-
-var leftTextX = margin + tPadLeft;
-var leftTextY = (height + labelArea)/ 2 - labelArea;
+  //.text("Household Income (Median)");*/
 
 svg.append("g").attr("class", "yText");
 var yText = d3.select(".yText");
@@ -81,7 +81,7 @@ yText
   .attr("class", "aText active y")
   .text("Obese (%)");
 
-yText
+/*yText
   .append("text")
   .attr("x", 0)
   .attr("data-name", "smokes")
@@ -89,13 +89,13 @@ yText
   .attr("class", "aText inactive y")
   //.text("Smokes (%)");
 
-xText
+yText
   .append("text")
   .attr("y", 26)
   .attr("data-name", "healthcare")
   .attr("data-axis", "y")
   .attr("class", "aText inactive y")
-  //.text("Lacks Healthcare (%)");
+  //.text("Lacks Healthcare (%)");*/
 
 d3.csv("assets/data/data.csv").then(function(data) {
   visualize(data);
@@ -213,7 +213,7 @@ svg
   .attr("transform", "translate(" +(margin + labelArea) + ",0)");
 
 var theCircles = svg.selectAll("g theCircles").data(theData).enter();
-//console.log(theCircles);
+console.log(theCircles);
 theCircles
   .append("circle")
   .attr("cx", function(d) {
@@ -234,161 +234,50 @@ theCircles
     toolTip.hide(d);
     d3.select(this).style("stroke" , "#323232"); 
 });
-
+var theCircles= svg.selectAll("g theCircles").data(theData).enter();
 theCircles
-  .append("text")
-  //.attr(function(d) {
-    //return d.abbr;
-  //})
-  .attr("dx", function(d){
-    return xScale(d[curX]);
-    
-  })
-  .attr("dy", function(d) {
-    return yScale(d[curY]) + circRadius/ 2.5;
-  })
-  .attr("font-size", circRadius) 
-  .attr("class", "stateText")
-  .on("mouseover", function(d) {
-    toolTip.show(d,this);
-    d3.select("." + d.abbr).style("stroke", "#e3e3e3")
-  })
-  .on("mouseout", function(d) {
-  toolTip.hide(d);
+//.attr(function(d) {
+  //return d.abbr;
+//})
+.attr("dx", function(d){
+  return xScale(d[curX]);
+})
+.attr("dy", function(d) {
+  return yScale(d[curY]) + circRadius/ 2.5;
+})
+.attr("font-size", circRadius) 
+.attr("class", "stateText")
+.on("mouseover", function(d) {
+  toolTip.show(d,this);
   d3.select("." + d.abbr).style("stroke", "#e3e3e3")
+})
+.on("mouseout", function(d) {
+toolTip.hide(d);
+d3.select("." + d.abbr).style("stroke", "#e3e3e3")
 })
 };
 
-/*d3.selectAll(".aText").on("click", function(){
+var circleText= svg.selectAll("null").data(theData).enter();
+circleText
+/*.append("text")
+.attr(height="30") 
+.attr(width="200")
+.attr(x ="0")
+.attr(y="15") 
+.attr(fill="red")
+.attr("I love SVG!")*/
 
-var self = d3.select(this);
-
-if (self.classed("inactive")) {
-
-var axis = self.attr("data-axis");
-var name = self.attr("data-name");
-
-if (axis === "x") {
-curX = name;
-
-xMinMax();
-
-xScale.domain([xMin, xMax]);
-
-svg.select(".xAxis").transition().duration(300).call(xAxis);
-
-
-d3.selectAll("circle").each(function() {
-
-d3
-  .select(this)
-  .transition()
-  .attr("cx", function(d) {
-    return xScale(d[curX]);
-  })
-  .duration(300);
-});
-
-d3.selectAll(".stateText").each(function() {
-
-d3
-  .select(this)
-  .transition()
-  .attr("dx", function(d) {
-    return xScale(d[curX]);
+/*.attr("x", function(d) {
+  return xLinearScale(d.poverty);
 })
-.duration(300);
-});
-
-labelChange(axis,self);
-}
-else{
-
-curY = name;
-
-yMinMax();
-
-yScale.domain([yMin, yMax]);
-
-svg.select(".yAxis").transition().duration(300).call(yAxis);
-
-
-d3.selectAll("circle").each(function() {
-
-d3
-  .select(this)
-  .transition()
-  .attr("cy", function(d) {
-    return yScale(d[curY]);
+.attr("y", function(d) {
+  return yLinearScale(d.obesity);
 })
-.duration(300);
-});
-
-d3.selectAll(".stateText").each(function() {
-
-d3
-  .select(this)
-  .transition()
-  .attr("dy", function(d) {
-    return yScale(d[curY]) + circRadius / 3;
+.text(function(d) {
+  return d.abbr;
 })
-.duration(300);
-});
-
-labelChange(axis,self);
-}
-}
-});
-
-d3.select(window).on("resize", resize);
-
-function resize() {
-
-width = parseInt(d3.select("#scatter").style("width"));
-height = width - width / 3.9;
-leftTextY = (height + labelArea) / 2 - labelArea;
-
-svg.attr("width", width).attr("height", height);
-
-xScale.range = ([height + margin - width - margin]);
-yScale.range = ([height - margin - labelArea, margin]);
-
-svg
-  .select(".xAxis")
-  .call(xAxis)
-  .attr("class", "xAxis")
-  .attr("transform", "translate(0," +(height- margin - labelArea) + ")");
-
-svg.select(".yAxis").call(yAxis);
-
-tickCount();
-
-xTextRefresh();
-yTextRefresh();
-
-crGet();
-
-
-d3
-    .selectAll("circle")
-    .attr("cy", function(d) {
-    return yScale(d[curY]);
-    })
-    .attr("cx", function(d) {
-    return xScale(d[curX]);
-    })
-    .attr("r", function() {
-    return circRadius;
-});
-
-d3
-    .selectAll(".stateText")
-    .attr("dy", function(d) {
-    return yScale(d[curY]);
-    })
-    .attr("dx", function(d) {
-    return xScale(d[curX]);
-    })
-    .attr("r", circRadius / 3);
+.attr("font-family", "sans-serif")
+.attr("font-size", "10px")
+.attr("text-anchor", "middle")
+.attr("fill", "white"); 
 }*/
-
